@@ -1,0 +1,60 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        namespace: ""
+    # ========== gateway配置在cloud节点内，层级绝对正确 ==========
+    gateway:
+      discovery:
+        locator:
+          enabled: false # 关闭自动路由，手动路由生效
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**
+            - Method=GET,POST
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+            - Method=GET,POST,PUT,DELETE
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+            - Method=GET,POST,PUT,DELETE
+  config:
+    import: nacos:application.yaml
+
+auth:
+  ignore-urls:
+    - /auth/login
+    - /auth/register
+    - /actuator/**
+    - /v3/api-docs/**
+    - /swagger-ui/**
+    - /swagger-ui.html
+    - /webjars/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    gateway:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

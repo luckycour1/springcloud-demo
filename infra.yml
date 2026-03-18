@@ -1,0 +1,120 @@
+services:
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: nacos
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    environment:
+      - MODE=standalone
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    networks:
+      - spring-cloud-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - spring-cloud-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - spring-cloud-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    ports:
+      - "6379:6379"
+    networks:
+      - spring-cloud-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - spring-cloud-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - spring-cloud-net
+
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
+    restart: unless-stopped  # 复用已有容器，异常时自动重启
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - spring-cloud-net
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: promtail
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml
+      - /mnt/e/workApp/all-logs:/var/log/spring-cloud
+    command: -config.file=/etc/promtail/config.yml
+    restart: always
+    depends_on:
+      - loki
+    networks:
+      - spring-cloud-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    restart: unless-stopped
+    ports:
+      - "8088:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    depends_on:
+      - kafka
+      - zookeeper
+    networks:
+      - spring-cloud-net
+          
+networks:
+  spring-cloud-net:
+    name: spring-cloud-net  # 强制网络名称为 spring-cloud-net
+    driver: bridge

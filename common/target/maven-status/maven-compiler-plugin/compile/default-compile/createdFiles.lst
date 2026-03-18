@@ -1,0 +1,5 @@
+com\example\common\result\Result.class
+com\example\common\dto\UserDTO.class
+com\example\common\util\TokenCache.class
+com\example\common\config\SwaggerConfig.class
+com\example\common\util\JwtUtil.class

@@ -1,0 +1,10 @@
+# 基础中间件
+docker pull confluentinc/cp-zookeeper:7.5.0
+docker pull confluentinc/cp-kafka:7.5.0
+docker pull nacos/nacos-server:v2.3.2
+
+# 监控套件
+docker pull prom/prometheus:latest
+docker pull grafana/grafana:latest
+docker pull grafana/loki:2.9.2
+docker pull grafana/promtail:2.9.2

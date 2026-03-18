@@ -1,0 +1,71 @@
+services:
+  gateway-service:
+    build:
+      context: ./gateway-service
+      no_cache: true  # 禁用构建缓存
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
+      - LOGGING_FILE_NAME=/logs/gateway-service.log
+    volumes:
+      - /mnt/e/workApp/all-logs/gateway:/logs
+    networks:
+      - spring-cloud-net
+
+  auth-service:
+    build:
+      context: ./auth-service
+      no_cache: true  # 禁用构建缓存
+    container_name: auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
+      - LOGGING_FILE_NAME=/logs/auth-service.log
+    volumes:
+      - /mnt/e/workApp/all-logs/auth:/logs
+    networks:
+      - spring-cloud-net
+
+  user-service:
+    build:
+      context: ./user-service
+      no_cache: true  # 禁用构建缓存
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:29092
+      - LOGGING_FILE_NAME=/logs/user-service.log
+    volumes:
+      - /mnt/e/workApp/all-logs/user:/logs
+    networks:
+      - spring-cloud-net
+
+  order-service:
+    build:
+      context: ./order-service
+      no_cache: true  # 禁用构建缓存
+    container_name: order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_CLOUD_NACOS_DISCOVERY_SERVER-ADDR=nacos:8848
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER-ADDR=nacos:8848
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:29092
+      - LOGGING_FILE_NAME=/logs/order-service.log
+    volumes:
+      - /mnt/e/workApp/all-logs/order:/logs
+    networks:
+      - spring-cloud-net
+
+networks:
+  spring-cloud-net:
+    external: true
+    name: spring-cloud-net  # 强制匹配 infra.yml 的网络名称
