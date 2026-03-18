@@ -1,6 +1,49 @@
-# SpringCloud Demo — 使用说明文档
 
-本文档汇总了本项目的服务端口、Swagger 路径、认证流程、构建和 Docker 操作及常见排查命令，便于快速上手和调试。
+# SpringCloud Demo
+
+> 🚀 基于 Spring Cloud & Spring Boot 3.x 的微服务实战项目，集成认证、网关、Kafka 消息、Docker Compose 一键部署，适合学习与生产实践。
+
+---
+
+## 项目简介
+
+本项目为典型的 Spring Cloud 微服务架构示例，包含用户、订单、认证、网关等服务，支持本地开发与容器化部署，内置 Kafka 消息流转与常用中间件。
+
+**特性亮点：**
+- Spring Boot 3.x + Java 17
+- 认证与网关分离，支持 JWT
+- Kafka 消息驱动，业务解耦
+- Docker Compose 一键启动全链路
+- Prometheus + Grafana + Loki 日志与监控
+- 完善的 API 文档（Swagger/OpenAPI）
+
+---
+
+## 快速开始
+
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/luckycour1/springcloud-demo.git
+cd springcloud-demo
+```
+
+### 2. 推荐 .gitignore 配置
+
+请确保 `.gitignore` 包含如下内容，避免上传 target/、日志、IDE 配置等无关文件：
+
+```
+target/
+*.log
+*.iml
+.idea/
+.vscode/
+*.jar
+```
+
+---
+
+## 一、项目概览
 
 ---
 
@@ -276,4 +319,16 @@ curl -X POST "http://localhost:8080/orders/create?userId=1&product=iPhone" -H "A
 
 ---
 
-如果你希望我把这份文档写入仓库的其他位置（例如 `docs/README.md`）或增加 CI/CD、健康检查和本地调试脚本（`run.sh` / `run.ps1`），告诉我具体位置和需求，我会继续补充。
+
+---
+
+## 贡献与交流
+
+- 欢迎 issue、PR 参与共建！
+- 如需定制 CI/CD、健康检查、脚本或文档结构优化，请留言或联系仓库维护者。
+
+---
+
+> 仓库地址：https://github.com/luckycour1/springcloud-demo
+> 
+> 如需更多帮助，随时在 Issues 区留言。
